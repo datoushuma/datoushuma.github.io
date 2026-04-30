@@ -1,10 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>大头数码</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大头数码 | 个人主页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #0d1117;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background-color: #238636;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #58a6ff;
+        }
+        .tagline {
+            font-size: 18px;
+            color: #8b949e;
+            margin-bottom: 30px;
+        }
+        .intro {
+            background-color: #161b22;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .link-btn {
+            background-color: #238636;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .link-btn:hover {
+            background-color: #2ea043;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, 大头数码!</h1>
-    <p>我的第一个GitHub Pages网站</p >
+    <div class="container">
+        <div class="avatar">大</div>
+        <h1>大头数码</h1>
+        <p class="tagline">专注数码 · 分享干货 · 一起成长</p >
+        
+        <div class="intro">
+            <p>👋 你好！我是大头，一个热爱数码产品的折腾党。</p >
+            <p>这里是我的个人主页，会分享实用的数码技巧、踩坑经验和工具推荐。</p >
+            <p>技术没有边界，折腾才是乐趣所在！</p >
+        </div>
+
+        <div class="links">
+            <a href=" " class="link-btn">我的项目</a >
+            <a href="#" class="link-btn">联系方式</a >
+            <a href="#" class="link-btn">技术博客</a >
+        </div>
+    </div>
 </body>
 </html>
