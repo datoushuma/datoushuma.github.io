@@ -1,0 +1,769 @@
+
+html_content = '''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 国内访问加速指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        github: {
+                            dark: '#0d1117',
+                            card: '#161b22',
+                            border: '#30363d',
+                            text: '#c9d1d9',
+                            muted: '#8b949e',
+                            accent: '#58a6ff',
+                            green: '#238636',
+                            purple: '#8957e5',
+                            orange: '#f0883e',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .glass-card {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(48, 54, 61, 0.6);
+        }
+        .method-card {
+            transition: all 0.3s ease;
+        }
+        .method-card:hover {
+            transform: translateY(-4px);
+            border-color: #58a6ff;
+            box-shadow: 0 10px 40px -10px rgba(88, 166, 255, 0.2);
+        }
+        .tag {
+            transition: all 0.2s;
+        }
+        .tag:hover {
+            transform: scale(1.05);
+        }
+        .progress-bar {
+            transition: width 1s ease-out;
+        }
+        .copy-btn {
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: rgba(88, 166, 255, 0.2);
+        }
+        .copy-btn.copied {
+            background: rgba(35, 134, 54, 0.2);
+            color: #3fb950;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <!-- Hero Section -->
+    <header class="relative overflow-hidden border-b border-github-border">
+        <div class="absolute inset-0 bg-gradient-to-br from-github-dark via-github-dark to-[#1a1f2e]"></div>
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-github-accent rounded-full mix-blend-multiply filter blur-3xl animate-pulse-slow"></div>
+            <div class="absolute bottom-20 right-10 w-72 h-72 bg-github-purple rounded-full mix-blend-multiply filter blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
+        </div>
+        
+        <div class="relative max-w-5xl mx-auto px-6 py-20 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-github-card border border-github-border mb-8 animate-fade-in">
+                <span class="w-2 h-2 rounded-full bg-github-green animate-pulse"></span>
+                <span class="text-sm text-github-muted">开发者必备</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-github-accent to-github-purple bg-clip-text text-transparent animate-slide-up">
+                GitHub 国内访问加速指南
+            </h1>
+            
+            <p class="text-lg md:text-xl text-github-muted max-w-2xl mx-auto mb-10 animate-slide-up" style="animation-delay: 0.1s;">
+                四种实用方案，从简单应急到一劳永逸，<br class="hidden md:block">解决页面打不开、git clone 慢的问题
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-4 animate-slide-up" style="animation-delay: 0.2s;">
+                <a href="#methods" class="px-6 py-3 rounded-lg bg-github-green text-white font-medium hover:bg-[#2ea043] transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    查看方案
+                </a>
+                <a href="#comparison" class="px-6 py-3 rounded-lg bg-github-card border border-github-border text-github-text font-medium hover:border-github-accent transition-colors">
+                    对比分析
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Stats -->
+    <section class="border-b border-github-border bg-github-card/30">
+        <div class="max-w-5xl mx-auto px-6 py-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="animate-fade-in">
+                    <div class="text-3xl font-bold text-white mb-1">4</div>
+                    <div class="text-sm text-github-muted">实用方案</div>
+                </div>
+                <div class="animate-fade-in" style="animation-delay: 0.1s;">
+                    <div class="text-3xl font-bold text-github-accent mb-1">0</div>
+                    <div class="text-sm text-github-muted">配置难度</div>
+                </div>
+                <div class="animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="text-3xl font-bold text-github-green mb-1">100%</div>
+                    <div class="text-sm text-github-muted">开箱即用</div>
+                </div>
+                <div class="animate-fade-in" style="animation-delay: 0.3s;">
+                    <div class="text-3xl font-bold text-github-purple mb-1">∞</div>
+                    <div class="text-sm text-github-muted">适用场景</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="methods" class="max-w-5xl mx-auto px-6 py-16">
+        
+        <!-- Method 1: Browser Extension -->
+        <div class="method-card glass-card rounded-2xl p-8 mb-8 animate-slide-up">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-2/3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-500/20">
+                            1
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">浏览器插件加速</h2>
+                            <div class="flex gap-2 mt-1">
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">Chrome</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">Edge</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">简单</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-github-muted mb-6 leading-relaxed">
+                        Chrome 和 Edge 应用商店里搜索「GitHub 加速」，有几个插件专门优化这个。装完刷新页面，速度快很多。
+                    </p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-github-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-github-text">安装简单，即装即用</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-github-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-github-text">网页浏览速度提升明显</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span class="text-sm text-github-muted">插件可能失效，需定期更换</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span class="text-sm text-github-muted">仅加速网页，git clone 仍慢</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-github-dark rounded-lg p-4 border border-github-border">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-github-muted uppercase tracking-wider">适用场景</span>
+                            <span class="text-xs text-github-accent">推荐指数</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-github-text">日常浏览 GitHub 网页</span>
+                            <div class="flex gap-1">
+                                <div class="w-20 h-2 bg-github-border rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full progress-bar" style="width: 70%"></div>
+                                </div>
+                                <span class="text-xs text-github-muted">7/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/3 flex items-center justify-center">
+                    <div class="w-full max-w-xs bg-github-dark rounded-xl p-6 border border-github-border">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-white">GitHub 加速</div>
+                                <div class="text-xs text-github-muted">浏览器扩展</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="h-2 bg-github-border rounded-full w-full"></div>
+                            <div class="h-2 bg-github-border rounded-full w-4/5"></div>
+                            <div class="h-2 bg-github-border rounded-full w-3/5"></div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <div class="flex-1 h-8 rounded bg-github-green/20 border border-github-green/30 flex items-center justify-center text-xs text-github-green">已安装</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Method 2: Mirror & Hosts -->
+        <div class="method-card glass-card rounded-2xl p-8 mb-8 animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-2/3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-purple-500/20">
+                            2
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">镜像站 & Hosts</h2>
+                            <div class="flex gap-2 mt-1">
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">gitclone</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">kgithub</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">中等</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-github-muted mb-6 leading-relaxed">
+                        网上有很多 GitHub 镜像，代码下载走这些镜像，速度快很多。hosts 改法稍微麻烦点，需要定期更新 IP。
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-github-dark rounded-lg p-4 border border-github-border">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-medium text-white">推荐镜像站</span>
+                                <span class="text-xs text-github-green">可用</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between group">
+                                    <code class="text-sm text-github-accent">gitclone.com</code>
+                                    <button onclick="copyToClipboard('gitclone.com')" class="copy-btn p-1.5 rounded text-github-muted hover:text-white">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between group">
+                                    <code class="text-sm text-github-accent">kgithub.com</code>
+                                    <button onclick="copyToClipboard('kgithub.com')" class="copy-btn p-1.5 rounded text-github-muted hover:text-white">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-github-dark rounded-lg p-4 border border-github-border">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-medium text-white">Hosts 配置</span>
+                                <span class="text-xs text-github-orange">需更新</span>
+                            </div>
+                            <div class="space-y-2 text-sm text-github-muted">
+                                <div class="flex items-start gap-2">
+                                    <span class="text-github-accent">1.</span>
+                                    <span>查找最新 GitHub IP</span>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-github-accent">2.</span>
+                                    <span>修改系统 hosts 文件</span>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-github-accent">3.</span>
+                                    <span>刷新 DNS 缓存</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-github-dark rounded-lg p-4 border border-github-border">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-github-muted uppercase tracking-wider">适用场景</span>
+                            <span class="text-xs text-github-accent">推荐指数</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-github-text">Clone 大项目、下载代码</span>
+                            <div class="flex gap-1">
+                                <div class="w-20 h-2 bg-github-border rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full progress-bar" style="width: 80%"></div>
+                                </div>
+                                <span class="text-xs text-github-muted">8/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/3 flex items-center justify-center">
+                    <div class="w-full max-w-xs bg-github-dark rounded-xl p-6 border border-github-border">
+                        <div class="text-center mb-4">
+                            <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center mb-3 shadow-lg shadow-purple-500/20">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            </div>
+                            <div class="text-sm font-medium text-white">镜像加速</div>
+                            <div class="text-xs text-github-muted mt-1">代码下载专用通道</div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-github-muted">原始速度</span>
+                                <div class="w-24 h-1.5 bg-github-border rounded-full overflow-hidden">
+                                    <div class="h-full bg-red-500 rounded-full" style="width: 15%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-github-muted">镜像速度</span>
+                                <div class="w-24 h-1.5 bg-github-border rounded-full overflow-hidden">
+                                    <div class="h-full bg-github-green rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Method 3: Network Tool -->
+        <div class="method-card glass-card rounded-2xl p-8 mb-8 animate-slide-up relative overflow-hidden" style="animation-delay: 0.2s;">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-github-green/20 to-transparent rounded-bl-full"></div>
+            
+            <div class="flex flex-col md:flex-row gap-8 relative">
+                <div class="md:w-2/3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-green-500/20">
+                            3
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">网络优化工具</h2>
+                            <div class="flex gap-2 mt-1">
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-green-500/10 text-green-400 border border-green-500/20">推荐</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-green-500/10 text-green-400 border border-green-500/20">一劳永逸</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-red-500/10 text-red-400 border border-red-500/20">需配置</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-github-green/10 border border-github-green/20 mb-6">
+                        <svg class="w-4 h-4 text-github-green" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                        <span class="text-sm text-github-green font-medium">当前最常用方案</span>
+                    </div>
+                    
+                    <p class="text-github-muted mb-6 leading-relaxed">
+                        配置好规则，GitHub 走优化线路，网页和 git 都快。优点是一劳永逸，网页、git、甚至 npm、docker 都能加速。
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="bg-github-dark rounded-lg p-3 border border-github-border flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            </div>
+                            <span class="text-sm text-github-text">网页加速</span>
+                        </div>
+                        <div class="bg-github-dark rounded-lg p-3 border border-github-border flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            </div>
+                            <span class="text-sm text-github-text">Git 加速</span>
+                        </div>
+                        <div class="bg-github-dark rounded-lg p-3 border border-github-border flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <span class="text-sm text-github-text">npm 加速</span>
+                        </div>
+                        <div class="bg-github-dark rounded-lg p-3 border border-github-border flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-400/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            </div>
+                            <span class="text-sm text-github-text">Docker 加速</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-github-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-github-text">一劳永逸，全局加速</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-github-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-github-text">支持多种开发工具链</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span class="text-sm text-github-muted">需要一定配置知识</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span class="text-sm text-github-muted">通常需要付费</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-github-dark rounded-lg p-4 border border-github-border">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-github-muted uppercase tracking-wider">适用场景</span>
+                            <span class="text-xs text-github-accent">推荐指数</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-github-text">专业开发者日常使用</span>
+                            <div class="flex gap-1">
+                                <div class="w-20 h-2 bg-github-border rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full progress-bar" style="width: 95%"></div>
+                                </div>
+                                <span class="text-xs text-github-muted">9.5/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/3 flex items-center justify-center">
+                    <div class="w-full max-w-xs relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-xl blur-xl"></div>
+                        <div class="relative bg-github-dark rounded-xl p-6 border border-github-border">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <div class="text-xs text-github-muted">config.yaml</div>
+                            </div>
+                            <div class="space-y-2 font-mono text-xs">
+                                <div class="text-purple-400">rules:</div>
+                                <div class="pl-4 text-github-text">- <span class="text-blue-400">DOMAIN</span>,github.com,<span class="text-green-400">Proxy</span></div>
+                                <div class="pl-4 text-github-text">- <span class="text-blue-400">DOMAIN</span>,raw.githubusercontent.com,<span class="text-green-400">Proxy</span></div>
+                                <div class="pl-4 text-github-text">- <span class="text-blue-400">DOMAIN</span>,api.github.com,<span class="text-green-400">Proxy</span></div>
+                                <div class="mt-4 text-purple-400">proxies:</div>
+                                <div class="pl-4 text-github-text">- <span class="text-yellow-400">name</span>: <span class="text-green-400">"Optimized"</span></div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-github-border">
+                                <div class="flex items-center gap-2 text-xs text-github-green">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>配置已生效</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Method 4: Mobile Hotspot -->
+        <div class="method-card glass-card rounded-2xl p-8 mb-8 animate-slide-up" style="animation-delay: 0.3s;">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-2/3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-orange-500/20">
+                            4
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">手机热点</h2>
+                            <div class="flex gap-2 mt-1">
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20">最简单</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20">应急</span>
+                                <span class="tag px-2 py-0.5 rounded text-xs bg-green-500/10 text-green-400 border border-green-500/20">零配置</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-github-muted mb-6 leading-relaxed">
+                        你没听错，有时候手机 4G/5G 访问 GitHub 比宽带还快。临时应急可以，长期用流量扛不住。
+                    </p>
+                    
+                    <div class="bg-gradient-to-r from-orange-500/10 to-pink-500/10 rounded-lg p-4 border border-orange-500/20 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-orange-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <div>
+                                <div class="text-sm font-medium text-white mb-1">应急神器</div>
+                                <div class="text-sm text-github-muted">适合在外面，急需看代码的时候。不用任何配置，打开手机热点即可。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-github-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-github-text">零配置，即开即用</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-github-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-github-text">有时候比宽带还快</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span class="text-sm text-github-muted">消耗手机流量</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span class="text-sm text-github-muted">不适合长期使用</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-github-dark rounded-lg p-4 border border-github-border">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-github-muted uppercase tracking-wider">适用场景</span>
+                            <span class="text-xs text-github-accent">推荐指数</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-github-text">临时应急、外出办公</span>
+                            <div class="flex gap-1">
+                                <div class="w-20 h-2 bg-github-border rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-orange-400 to-pink-400 rounded-full progress-bar" style="width: 60%"></div>
+                                </div>
+                                <span class="text-xs text-github-muted">6/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/3 flex items-center justify-center">
+                    <div class="w-full max-w-xs bg-github-dark rounded-xl p-6 border border-github-border text-center">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center mb-4 shadow-lg shadow-orange-500/20">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="text-lg font-bold text-white mb-1">5G 热点</div>
+                        <div class="text-sm text-github-muted mb-4">已连接 2 台设备</div>
+                        <div class="flex justify-center gap-1 mb-4">
+                            <div class="w-1 h-4 bg-github-green rounded-full"></div>
+                            <div class="w-1 h-4 bg-github-green rounded-full"></div>
+                            <div class="w-1 h-4 bg-github-green rounded-full"></div>
+                            <div class="w-1 h-4 bg-github-green rounded-full"></div>
+                            <div class="w-1 h-4 bg-github-border rounded-full"></div>
+                        </div>
+                        <div class="text-xs text-github-muted">↓ 45.2 MB/s  ↑ 12.8 MB/s</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Comparison Table -->
+    <section id="comparison" class="border-t border-github-border bg-github-card/20">
+        <div class="max-w-5xl mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">方案对比</h2>
+                <p class="text-github-muted">根据你的需求选择最适合的方案</p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-github-border">
+                            <th class="pb-4 pr-6 text-sm font-medium text-github-muted">方案</th>
+                            <th class="pb-4 pr-6 text-sm font-medium text-github-muted">难度</th>
+                            <th class="pb-4 pr-6 text-sm font-medium text-github-muted">网页</th>
+                            <th class="pb-4 pr-6 text-sm font-medium text-github-muted">Git</th>
+                            <th class="pb-4 pr-6 text-sm font-medium text-github-muted">稳定性</th>
+                            <th class="pb-4 text-sm font-medium text-github-muted">成本</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-github-border/50 hover:bg-github-card/50 transition-colors">
+                            <td class="py-4 pr-6 font-medium text-white">浏览器插件</td>
+                            <td class="py-4 pr-6"><span class="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">简单</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">✓</span></td>
+                            <td class="py-4 pr-6"><span class="text-red-400">✗</span></td>
+                            <td class="py-4 pr-6"><span class="text-yellow-400">一般</span></td>
+                            <td class="py-4 text-github-muted">免费</td>
+                        </tr>
+                        <tr class="border-b border-github-border/50 hover:bg-github-card/50 transition-colors">
+                            <td class="py-4 pr-6 font-medium text-white">镜像站/Hosts</td>
+                            <td class="py-4 pr-6"><span class="px-2 py-1 rounded bg-yellow-500/10 text-yellow-400 text-xs">中等</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">✓</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">✓</span></td>
+                            <td class="py-4 pr-6"><span class="text-yellow-400">一般</span></td>
+                            <td class="py-4 text-github-muted">免费</td>
+                        </tr>
+                        <tr class="border-b border-github-border/50 hover:bg-github-card/50 transition-colors bg-github-green/5">
+                            <td class="py-4 pr-6 font-medium text-white flex items-center gap-2">
+                                网络优化工具
+                                <span class="px-1.5 py-0.5 rounded bg-github-green/20 text-github-green text-xs">推荐</span>
+                            </td>
+                            <td class="py-4 pr-6"><span class="px-2 py-1 rounded bg-red-500/10 text-red-400 text-xs">复杂</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">✓</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">✓</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">优秀</span></td>
+                            <td class="py-4 text-github-muted">付费</td>
+                        </tr>
+                        <tr class="hover:bg-github-card/50 transition-colors">
+                            <td class="py-4 pr-6 font-medium text-white">手机热点</td>
+                            <td class="py-4 pr-6"><span class="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">零配置</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">✓</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">✓</span></td>
+                            <td class="py-4 pr-6"><span class="text-github-green">优秀</span></td>
+                            <td class="py-4 text-github-muted">流量费</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recommendations -->
+    <section class="border-t border-github-border">
+        <div class="max-w-5xl mx-auto px-6 py-16">
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-card rounded-2xl p-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">新手推荐</h3>
+                    </div>
+                    <p class="text-github-muted mb-4">刚开始使用 GitHub，不想折腾配置？</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm text-github-text">
+                            <span class="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs font-bold">1</span>
+                            <span>安装浏览器插件（日常浏览）</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-github-text">
+                            <span class="w-6 h-6 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center text-xs font-bold">2</span>
+                            <span>收藏镜像站（下载代码）</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-8 border-github-green/30">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-github-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">老玩家首选</h3>
+                    </div>
+                    <p class="text-github-muted mb-4">每天重度使用 GitHub，追求最佳体验？</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm text-github-text">
+                            <span class="w-6 h-6 rounded-full bg-green-500/10 text-github-green flex items-center justify-center text-xs font-bold">✓</span>
+                            <span>直接配置网络优化工具</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-github-text">
+                            <span class="w-6 h-6 rounded-full bg-green-500/10 text-github-green flex items-center justify-center text-xs font-bold">✓</span>
+                            <span>一劳永逸，全局加速</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-github-border bg-github-dark">
+        <div class="max-w-5xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2 text-github-muted text-sm">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <span>GitHub 国内访问加速指南</span>
+                </div>
+                <div class="text-sm text-github-muted">
+                    希望对你有帮助 🚀
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target.closest('button');
+                btn.classList.add('copied');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            });
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.method-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(card);
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Progress bar animation on scroll
+        const progressBars = document.querySelectorAll('.progress-bar');
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bar = entry.target;
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        progressBars.forEach(bar => progressObserver.observe(bar));
+    </script>
+</body>
+</html>'''
+
+# Save to output directory
+with open('/mnt/agents/output/github_speedup_guide.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("✅ 网页已生成！")
+print("📁 文件路径: /mnt/agents/output/github_speedup_guide.html")
