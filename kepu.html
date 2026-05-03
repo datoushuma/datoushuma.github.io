@@ -1,0 +1,786 @@
+
+html_content = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QWERTY：一个为机器妥协的百年传奇</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f0f12;
+            --bg-secondary: #1a1a1e;
+            --bg-card: #232328;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --accent-gold: #c9a96e;
+            --accent-copper: #b87333;
+            --accent-warm: #d4a574;
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-medium: rgba(255,255,255,0.1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+        
+        /* Typography */
+        .serif { font-family: 'Noto Serif SC', serif; }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, #0a0a0e 0%, #1a1510 50%, #0f0f12 100%);
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://kimi-web-img.moonshot.cn/img/goblintechkeys.com/86a00ce8e539c6ae7a552608c2eda35ab23a3f6d.jpg') center/cover no-repeat;
+            opacity: 0.15;
+            filter: blur(2px) grayscale(60%);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+        }
+        
+        .hero-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 0.5rem 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.3s;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.6s;
+        }
+        
+        .hero h1 .highlight {
+            color: var(--accent-gold);
+            position: relative;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.9s;
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 1.5s;
+        }
+        
+        .scroll-indicator::after {
+            content: '';
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--accent-gold), transparent);
+            animation: pulse 2s infinite;
+        }
+        
+        /* Section Styles */
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            margin-bottom: 4rem;
+        }
+        
+        .section-number {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .section h2 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+        
+        .section h2 .serif {
+            font-weight: 600;
+            color: var(--accent-warm);
+        }
+        
+        .lead-text {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            line-height: 2;
+            max-width: 800px;
+        }
+        
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-copper));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-medium);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+        
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        
+        /* Image Section */
+        .image-section {
+            position: relative;
+            margin: 4rem 0;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .image-section img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        
+        .image-section:hover img {
+            transform: scale(1.02);
+        }
+        
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin: 3rem 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-gold), var(--accent-copper), transparent);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.6s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-gold);
+            transform: translateX(-5px);
+        }
+        
+        .timeline-year {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        
+        /* Quote Block */
+        .quote-block {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-gold);
+            padding: 2.5rem;
+            margin: 4rem 0;
+            border-radius: 0 12px 12px 0;
+            position: relative;
+        }
+        
+        .quote-block::before {
+            content: '"';
+            font-family: 'Noto Serif SC', serif;
+            font-size: 6rem;
+            color: var(--accent-gold);
+            opacity: 0.2;
+            position: absolute;
+            top: -1rem;
+            left: 1rem;
+            line-height: 1;
+        }
+        
+        .quote-block p {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quote-block .author {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: normal;
+        }
+        
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .comparison-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+        
+        .comparison-item:hover {
+            border-color: var(--accent-gold);
+        }
+        
+        .comparison-item img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .comparison-item h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .comparison-item .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tag-qwerty {
+            background: rgba(201, 169, 110, 0.15);
+            color: var(--accent-gold);
+        }
+        
+        .tag-dvorak {
+            background: rgba(100, 200, 150, 0.15);
+            color: #64c896;
+        }
+        
+        /* Interactive Section */
+        .interactive-section {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #1e1a14 100%);
+            border-radius: 20px;
+            padding: 4rem;
+            margin: 6rem auto;
+            max-width: 900px;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .interactive-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(201,169,110,0.03) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .interactive-section h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .interactive-section p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .poll-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .poll-btn {
+            background: transparent;
+            border: 2px solid var(--border-medium);
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .poll-btn:hover {
+            border-color: var(--accent-gold);
+            background: rgba(201, 169, 110, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .poll-btn.selected {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: var(--bg-primary);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .comparison { grid-template-columns: 1fr; }
+            .timeline { padding-left: 2rem; }
+            .interactive-section { padding: 2rem; }
+            .section { padding: 4rem 1.5rem; }
+        }
+        
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+        
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-tag">键盘进化史 · 一个反直觉的真相</div>
+            <h1>
+                为什么键盘是<br>
+                <span class="highlight serif">QWERTY</span>，
+                <br>而非 ABCDE？
+            </h1>
+            <p class="subtitle">
+                一个为了避免机械故障的妥协设计，如何锁死了人类一个半世纪的输入习惯
+            </p>
+        </div>
+        <div class="scroll-indicator">向下探索</div>
+    </section>
+
+    <!-- Introduction -->
+    <section class="section reveal">
+        <div class="section-header">
+            <span class="section-number">01 / 起源</span>
+            <h2>最广为流传的误解：<br><span class="serif">"QWERTY 是为了提升打字效率"</span></h2>
+        </div>
+        <p class="lead-text">
+            恰恰相反。QWERTY 诞生的初衷，<strong style="color: var(--accent-gold);">就是故意让你打字变慢。</strong>
+            1868 年，Christopher Sholes 在设计第一台商用打字机时，面临一个棘手的机械难题：
+            当相邻字母的连杆同时被按下，字锤会在纸面上方纠缠卡死，整台机器直接罢工。
+        </p>
+        
+        <div class="image-section">
+            <img src="https://kimi-web-img.moonshot.cn/img/c8.alamy.com/6c7012da6941741355ec1e12a247cde580ff4982.jpg" alt="机械打字机内部结构">
+            <div class="image-caption">早期机械打字机的连杆机构——相邻字锤的碰撞是设计者的噩梦</div>
+        </div>
+        
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h3>机械妥协</h3>
+                <p>Sholes 的核心思路根本不是优化手感，而是把英语中最常用的字母对——TH、HE、AN、IN——彻底打散到键盘两端，强行降低敲击频率。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧠</div>
+                <h3>反直觉设计</h3>
+                <p>左手小指下的 Q、Z，右手小指下的 P、L，这些边缘位置恰恰是高频字母的"流放地"。设计目的只有一个：让机械结构跟得上人手的节奏。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⏳</div>
+                <h3>速度限制</h3>
+                <p>在 QWERTY 布局下，打字员被迫频繁跨越键盘左右两侧，手指移动距离被刻意拉长——这一切，只为给笨拙的机械连杆争取复位时间。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Path Dependency -->
+    <section class="section reveal" style="background: var(--bg-secondary); margin: 0; max-width: 100%; padding: 6rem 2rem;">
+        <div style="max-width: 1100px; margin: 0 auto;">
+            <div class="section-header">
+                <span class="section-number">02 / 锁定</span>
+                <h2>路径依赖：<br><span class="serif">标准一旦确立，哪怕不是最优解</span></h2>
+            </div>
+            <p class="lead-text">
+                机械结构早已淘汰，电子键盘彻底告别了卡键问题。那为什么我们还在用这套为机器妥协的布局？
+                答案藏在经济学中最经典的概念里——<strong style="color: var(--accent-gold);">路径依赖</strong>。
+            </p>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">1873</div>
+                    <div class="timeline-content">
+                        <strong>雷明顿公司</strong>开始量产 QWERTY 打字机。这是人类历史上第一次大规模培养专业打字员群体，
+                        肌肉记忆开始在全球第一批办公室文员的手指上刻下烙印。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1893</div>
+                    <div class="timeline-content">
+                        行业五大厂商合并，<strong>QWERTY 被锁死为行业唯一标准</strong>。
+                        从此，任何试图挑战这一秩序的新布局，都必须面对一个无法逾越的壁垒：全球数百万打字员的肌肉记忆。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1936</div>
+                    <div class="timeline-content">
+                        <strong>德沃夏克布局</strong>诞生。它将 70% 的常用字母集中在主行，左右手负载均衡，
+                        理论上能减少 30% 的手指移动距离。但它来得太晚了——QWERTY 的帝国已经坚不可摧。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2026</div>
+                    <div class="timeline-content">
+                        一个半世纪后的今天，<strong>QWERTY 依然统治着从笔记本到智能手机的每一块键盘</strong>。
+                        不是因为它最好，只是因为它最早。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brain Rewiring -->
+    <section class="section reveal">
+        <div class="section-header">
+            <span class="section-number">03 / 重塑</span>
+            <h2>被驯化的大脑：<br><span class="serif">神经回路的百年固化</span></h2>
+        </div>
+        <p class="lead-text">
+            更深层的影响在于，这套为机器设计的布局已经悄悄重塑了我们的大脑。
+            高频字母的分散排布，强制左右手交替敲击，长年累月驯化出了固定的神经通路。
+        </p>
+        
+        <div class="quote-block">
+            <p>
+                老打字员换成更科学的 Dvorak 布局反而更卡顿的原因，不是新布局不好——
+                是你的大脑早就被 QWERTY 彻底驯化了。
+            </p>
+            <div class="author">—— 神经可塑性的代价</div>
+        </div>
+        
+        <div class="comparison">
+            <div class="comparison-item">
+                <img src="https://kimi-web-img.moonshot.cn/img/petitkeycaps.com/6d32414801e54d8ab48536641e46b58e4544a048.webp" alt="QWERTY 键盘布局">
+                <span class="tag tag-qwerty">QWERTY · 1873</span>
+                <h4>为机器而生</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
+                    高频字母刻意分散<br>
+                    手指移动距离最大化<br>
+                    左右手交替被迫进行<br>
+                    <span style="color: var(--accent-gold);">→ 降低机械故障率</span>
+                </p>
+            </div>
+            <div class="comparison-item">
+                <img src="https://kimi-web-img.moonshot.cn/img/i0.wp.com/bf8323c8c243da9a11e4bd3f49504d0d45bfbdcb.jpg" alt="Dvorak 键盘布局">
+                <span class="tag tag-dvorak">DVORAK · 1936</span>
+                <h4>为人手而生</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
+                    70% 常用字母在主行<br>
+                    手指移动距离最小化<br>
+                    左右手负载均衡<br>
+                    <span style="color: #64c896;">→ 提升人体工学效率</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Evolution -->
+    <section class="section reveal">
+        <div class="section-header">
+            <span class="section-number">04 / 移动时代</span>
+            <h2>从九宫格到全键盘：<br><span class="serif">另一场输入革命</span></h2>
+        </div>
+        <p class="lead-text">
+            当键盘从桌面缩进掌心，输入方式再次面临抉择。有趣的是，
+            在智能手机普及的早期，九宫格（T9）曾以压倒性优势战胜了全键盘——
+            这背后，同样是一场关于效率与习惯的博弈。
+        </p>
+        
+        <div class="image-section">
+            <img src="https://kimi-web-img.moonshot.cn/img/media.wired.com/044361fc81dcc18444183012fa2935ec8b9a993b.jpg" alt="诺基亚 T9 键盘手机">
+            <div class="image-caption">诺基亚时代的 T9 九宫格输入——在拇指大小的空间里，少即是多</div>
+        </div>
+        
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h3>物理限制</h3>
+                <p>早期手机屏幕仅 2-3 英寸，全键盘的按键小到无法用拇指精准点击。九宫格将 26 个字母压缩到 8 个按键，每个按键面积足够大，误触率大幅降低。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧩</div>
+                <h3>单手操作</h3>
+                <p>九宫格完美适配单手拇指输入。在公交上、走路时、单手拎东西的场景下，九宫格的效率远超需要双手扶持的全键盘。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🤖</div>
+                <h3>智能预测</h3>
+                <p>T9 预测输入技术的成熟让九宫格如虎添翼。用户只需按顺序按下数字键，算法自动匹配最可能的单词——按键次数反而比全键盘更少。</p>
+            </div>
+        </div>
+        
+        <div class="quote-block" style="margin-top: 3rem;">
+            <p>
+                九宫格的胜利，本质上是"在约束条件下寻找最优解"的胜利。
+                它不是最好的输入方式，但它是那个时代小屏幕设备上最务实的选择——
+                正如 QWERTY 之于机械打字机。
+            </p>
+        </div>
+    </section>
+
+    <!-- Interactive Poll -->
+    <section class="interactive-section reveal">
+        <h3>📲 你的日常选择</h3>
+        <p>在手机上打字时，你更习惯用哪种输入方式？<br>点击选择，看看有多少人与你一样。</p>
+        <div class="poll-options">
+            <button class="poll-btn" onclick="selectOption(this)">⌨️ 全键盘（QWERTY）</button>
+            <button class="poll-btn" onclick="selectOption(this)">🔢 九宫格（T9）</button>
+            <button class="poll-btn" onclick="selectOption(this)">🎤 语音输入</button>
+            <button class="poll-btn" onclick="selectOption(this)">✍️ 手写输入</button>
+        </div>
+        <p id="poll-result" style="margin-top: 2rem; font-size: 0.9rem; color: var(--accent-gold); opacity: 0; transition: opacity 0.5s ease;"></p>
+    </section>
+
+    <!-- Conclusion -->
+    <section class="section reveal">
+        <div class="section-header">
+            <span class="section-number">05 / 结语</span>
+            <h2>最优解，往往输给<br><span class="serif">最先出现的那个</span></h2>
+        </div>
+        <p class="lead-text">
+            QWERTY 能统治键盘 150 年，从来不是因为它最完美、最高效。
+            它是一个关于<strong style="color: var(--accent-gold);">时机、标准与沉没成本</strong>的故事——
+            一个为了避免机械故障的妥协设计，借助路径依赖的滚雪球效应，
+            最终成为人类文明中难以撼动的默认选项。
+        </p>
+        <p class="lead-text" style="margin-top: 2rem;">
+            下一次当你敲击键盘时，不妨想一想：<br>
+            你手指下的每一个按键位置，都承载着一台 19 世纪机械打字机的叹息。
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p> 键盘进化史探索 · 设计 inspired by the beauty of constraints</p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">参考资料：The Economist, Smithsonian Magazine, Wired, TypeTest.io</p>
+    </footer>
+
+    <script>
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.reveal, .timeline-item').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Poll interaction
+        function selectOption(btn) {
+            document.querySelectorAll('.poll-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            const result = document.getElementById('poll-result');
+            const choices = {
+                '⌨️ 全键盘（QWERTY）': '全球约 62% 的智能手机用户选择全键盘，触屏时代大屏让精准点击成为可能。',
+                '🔢 九宫格（T9）': '在中文输入场景下，九宫格凭借拼音联想仍保有大量忠实用户，尤其是单手操作场景。',
+                '🎤 语音输入': '随着 AI 语音识别准确率突破 98%，语音输入正成为增长最快的交互方式。',
+                '✍️ 手写输入': '在长辈用户和特定场景（如签名、生僻字）中，手写依然不可替代。'
+            };
+            
+            result.textContent = choices[btn.textContent] || '感谢参与！每一种输入方式都是技术与习惯博弈的产物。';
+            result.style.opacity = '1';
+        }
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>"""
