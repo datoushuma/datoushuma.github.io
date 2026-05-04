@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信号满格却刷不动？运营商不会告诉你的4个真相</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #f43f5e;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            color: #e2e8f0;
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 动态背景粒子 */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.15);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            25% { transform: translateY(-30px) translateX(20px); opacity: 0.6; }
+            50% { transform: translateY(20px) translateX(-20px); opacity: 0.4; }
+            75% { transform: translateY(-10px) translateX(15px); opacity: 0.5; }
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #f43f5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover {
+            color: #818cf8;
+        }
+
+        /* Hero 区域 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            border-radius: 50px;
+            color: #f43f5e;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.3); }
+            50% { box-shadow: 0 0 20px 5px rgba(244, 63, 94, 0.1); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 span {
+            color: #f43f5e;
+            -webkit-text-fill-color: #f43f5e;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .hero-img {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(99, 102, 241, 0.3);
+            margin: 2rem auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .hero-img:hover {
+            transform: scale(1.02);
+        }
+
+        .scroll-indicator {
+            margin-top: 3rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* 通用区块样式 */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 50px;
+            color: #818cf8;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #c7d2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 误区纠正区块 */
+        .myth-section {
+            background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
+        }
+
+        .myth-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .myth-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .myth-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .myth-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .myth-card h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #f43f5e;
+        }
+
+        .myth-card p {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+        }
+
+        /* 真相卡片网格 */
+        .truths-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .truth-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .truth-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
+        }
+
+        .truth-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .truth-card:hover::after {
+            opacity: 1;
+        }
+
+        .truth-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .truth-card:hover .truth-img {
+            transform: scale(1.1);
+        }
+
+        .truth-content {
+            padding: 2rem;
+        }
+
+        .truth-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .truth-content h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+
+        .truth-content p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .truth-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* 技巧区块 */
+        .tips-section {
+            background: linear-gradient(180deg, transparent 0%, rgba(245, 158, 11, 0.05) 50%, transparent 100%);
+        }
+
+        .tips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .tip-item {
+            background: var(--glass);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+            min-width: 280px;
+        }
+
+        .tip-item:hover {
+            background: rgba(245, 158, 11, 0.1);
+            transform: translateX(10px);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .tip-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .tip-text {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        /* 总结区块 */
+        .summary-section {
+            text-align: center;
+            padding: 8rem 2rem;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(244, 63, 94, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 4rem 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+            backdrop-filter: blur(30px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-box::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2), transparent 70%);
+            border-radius: 50%;
+        }
+
+        .summary-box::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(244, 63, 94, 0.2), transparent 70%);
+            border-radius: 50%;
+        }
+
+        .summary-box > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .summary-box h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #fff, #c7d2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .summary-points {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .summary-point {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            color: #c7d2fe;
+            transition: all 0.3s;
+        }
+
+        .summary-point:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: scale(1.05);
+        }
+
+        .cta-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(99, 102, 241, 0.6);
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 6rem 1.5rem 3rem; }
+            section { padding: 4rem 1.5rem; }
+            .myth-card { padding: 2rem 1.5rem; }
+            .truth-content { padding: 1.5rem; }
+            .summary-box { padding: 2.5rem 1.5rem; }
+        }
+
+        /* 滚动动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 装饰元素 */
+        .deco-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景粒子 -->
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- 导航 -->
+    <nav>
+        <div class="logo">📡 信号真相</div>
+        <ul class="nav-links">
+            <li><a href="#myth">误区</a></li>
+            <li><a href="#truths">四大真相</a></li>
+            <li><a href="#tips">破解技巧</a></li>
+            <li><a href="#summary">总结</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">🔥 深度揭秘</div>
+            <h1>信号满格却刷不动？<br>运营商<span>打死不说</span>的4个真相</h1>
+            <p class="hero-subtitle">手机信号满格，视频却一直转圈？消息发不出去？网页半天打不开？别急着骂运营商——先看完这篇，你可能一直被"骗"了！</p>
+            <img src="https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/1bbe1a77fe13d354a1904a8b0586db4803f98809.jpg" alt=" frustrated person with slow phone" class="hero-img">
+            <div class="scroll-indicator">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2">
+                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- 误区纠正 -->
+    <section class="myth-section" id="myth">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-tag">先纠正一个认知误区</div>
+                <h2 class="section-title">信号满格 ≠ 网速飞快</h2>
+                <p class="section-desc">这是运营商最希望你混淆的概念，也是90%的人踩过的坑</p>
+            </div>
+            <div class="myth-card fade-in">
+                <div class="myth-icon">📶❌</div>
+                <h3>信号格只代表"连得上"，不代表"跑得快"</h3>
+                <p>手机屏幕上的那几个小扇形，仅仅反映了你和基站之间的<strong>连接强度</strong>——也就是"能不能连上"。但能不能连上，和连上之后能跑多快，完全是两码事！运营商故意让你把"满格"等同于"高速"，这才是最大的套路。</p>
+                <img src="https://kimi-web-img.moonshot.cn/img/cdn.shopify.com/1366d833c9454041b422d7928b57bb0b593c2e87.png" alt="signal strength vs speed chart" style="width:100%; max-width:500px; margin-top:2rem; border-radius:16px;">
+            </div>
+        </div>
+    </section>
+
+    <!-- 四大真相 -->
+    <section id="truths">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-tag">核心揭秘</div>
+                <h2 class="section-title">运营商不会告诉你的4个真相</h2>
+                <p class="section-desc">每一条都是亲身经历+技术原理，看完你就懂了</p>
+            </div>
+
+            <div class="truths-grid">
+                <!-- 真相1 -->
+                <div class="truth-card fade-in">
+                    <img src="https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/86c7a761109f89eff87fed8043cf705dba9049c7.jpg" alt="crowded people using phones" class="truth-img">
+                    <div class="truth-content">
+                        <div class="truth-number">1</div>
+                        <h3>基站拥堵：人多的地方必卡</h3>
+                        <p>每个基站的带宽就像一条高速公路，车道数是固定的。商场、地铁、演唱会现场，成百上千人同时连同一个基站，每个人分到的带宽被疯狂稀释。这时候哪怕信号满格，你也只能排队"堵车"。</p>
+                        <span class="truth-tag">⚠️ 最常见</span>
+                    </div>
+                </div>
+
+                <!-- 真相2 -->
+                <div class="truth-card fade-in">
+                    <img src="https://kimi-web-img.moonshot.cn/img/thumbs.dreamstime.com/6441d27f1cf377c76c4f48749d1af6ff95bcb307.jpg" alt="5G tower network" class="truth-img">
+                    <div class="truth-content">
+                        <div class="truth-number">2</div>
+                        <h3>频段陷阱：满格的"低速伪装"</h3>
+                        <p>基站有高频和低频两种频段。低频穿透力强、覆盖广，很容易让你看到满格信号，但网速像蜗牛；高频网速飞快，但容易被遮挡。运营商为了让你"看起来有信号"，优先让你连低速频段——满格的假象，低速的现实。</p>
+                        <span class="truth-tag">🔍 最隐蔽</span>
+                    </div>
+                </div>
+
+                <!-- 真相3 -->
+                <div class="truth-card fade-in">
+                    <img src="https://kimi-web-img.moonshot.cn/img/platform.theverge.com/3251c2f1a68c46ce9c7d06a875c678197287e739.jpg" alt="data usage limit warning" class="truth-img">
+                    <div class="truth-content">
+                        <div class="truth-number">3</div>
+                        <h3>达量限速：不限量的"隐形天花板"</h3>
+                        <p>办套餐时运营商只吹"不限流量"，但小字条款里藏着"达量限速"——比如每月用超100GB，直接限速到1Mbps。这时候信号再满，也只能发发文字，视频根本刷不了。这才是真正的隐形套路。</p>
+                        <span class="truth-tag">💸 最坑钱</span>
+                    </div>
+                </div>
+
+                <!-- 真相4 -->
+                <div class="truth-card fade-in">
+                    <img src="https://kimi-web-img.moonshot.cn/img/www.shutterstock.com/6f281d5cbd01bbadc4ea6f2c9ef1ea823d501bab.jpg" alt="signal interference" class="truth-img">
+                    <div class="truth-content">
+                        <div class="truth-number">4</div>
+                        <h3>信号干扰：看不见的"网速杀手"</h3>
+                        <p>周围的电子设备、其他基站的信号重叠、甚至你那厚重的手机壳，都会干扰信号质量。数据传输出错、反复重传，网速自然暴跌。运营商只会让你"换个地方试试"，从不告诉你真正的原因。</p>
+                        <span class="truth-tag">🌀 最容易忽略</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 破解技巧 -->
+    <section class="tips-section" id="tips">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-tag">实用指南</div>
+                <h2 class="section-title">5个简单技巧，轻松破解网速困局</h2>
+                <p class="section-desc">不用换运营商，不用买新手机，几步操作就能明显改善</p>
+            </div>
+
+            <div class="tips-container fade-in">
+                <div class="tip-item">
+                    <span class="tip-icon">📊</span>
+                    <span class="tip-text">先查流量有没有用超，确认是否被限速</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-icon">✈️</span>
+                    <span class="tip-text">开关飞行模式，强制重新连接最优基站</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-icon">📱</span>
+                    <span class="tip-text">取下厚重手机壳，减少物理信号遮挡</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-icon">🏃</span>
+                    <span class="tip-text">避开人流密集区，远离基站拥堵地带</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-icon">🔄</span>
+                    <span class="tip-text">手动切换网络模式，尝试锁定高速频段</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 总结 -->
+    <section class="summary-section" id="summary">
+        <div class="summary-box fade-in">
+            <h2>记住这个核心结论</h2>
+            <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 2rem;">信号满格和网速快，从来就不是一回事。网速慢的背后，是运营商精心设计的4重套路：</p>
+            <div class="summary-points">
+                <div class="summary-point">🚦 基站拥堵</div>
+                <div class="summary-point">📡 频段陷阱</div>
+                <div class="summary-point">⛔ 达量限速</div>
+                <div class="summary-point">📳 信号干扰</div>
+            </div>
+            <p style="color: #cbd5e1; font-size: 1.1rem; margin: 2rem 0;">掌握上面5个技巧，你就能轻松识破"满格信号"的伪装，再也不用被运营商的套路牵着鼻子走！</p>
+            <button class="cta-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">👆 再复习一遍</button>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>📡 信号真相 · 让每一格信号都货真价实</p>
+        <p style="margin-top:0.5rem; font-size:0.8rem;">内容仅供技术科普参考 | 图片素材来自网络</p>
+    </footer>
+
+    <script>
+        // 生成背景粒子
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const size = Math.random() * 100 + 50;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // 鼠标跟随光效
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.body.style.background = `
+                radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)
+            `;
+        });
+    </script>
+</body>
+</html>
