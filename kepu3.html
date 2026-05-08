@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>为什么 C 盘不能随便存东西？</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4',
+                        surface: 'rgba(255, 255, 255, 0.03)',
+                        'surface-hover': 'rgba(255, 255, 255, 0.06)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient-x': 'gradient-x 15s ease infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'gradient-x': {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0f;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-strong {
+            background: rgba(30, 30, 40, 0.7);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .text-gradient-blue {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Animated Background */
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: 0;
+        }
+
+        /* Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-scale.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Number Badge */
+        .number-badge {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Grid Pattern */
+        .grid-pattern {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+    </style>
+</head>
+<body class="antialiased relative">
+
+    <!-- Background Effects -->
+    <div class="fixed inset-0 grid-pattern pointer-events-none z-0"></div>
+    <div class="bg-orb w-96 h-96 bg-purple-600 top-0 left-1/4 animate-pulse-slow"></div>
+    <div class="bg-orb w-80 h-80 bg-blue-600 top-1/3 right-0 animate-float"></div>
+    <div class="bg-orb w-72 h-72 bg-indigo-600 bottom-0 left-0 animate-pulse-slow" style="animation-delay: 2s;"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-strong border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                    </svg>
+                </div>
+                <span class="font-bold text-lg tracking-tight text-white">磁盘管理指南</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+                <a href="#core" class="hover:text-white transition-colors">核心原理</a>
+                <a href="#risks" class="hover:text-white transition-colors">五大风险</a>
+                <a href="#solution" class="hover:text-white transition-colors">正确方案</a>
+                <a href="#habits" class="hover:text-white transition-colors">使用习惯</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6 relative z-10 text-center">
+            <div class="reveal-scale active">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/10 mb-8">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    <span class="text-sm text-gray-300 font-medium">系统优化必读</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tight">
+                    <span class="block text-white mb-2">为什么</span>
+                    <span class="text-gradient">C 盘不能随便存东西？</span>
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-12 font-light">
+                    C 盘是系统盘，管电脑生死；D/E 盘是仓库盘，只管存东西。<br>
+                    <span class="text-white font-medium">混着用必卡、必崩、必丢数据。</span>
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#risks" class="px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg hover:shadow-indigo-500/25 transition-all hover:-translate-y-1">
+                        查看五大风险
+                    </a>
+                    <a href="#solution" class="px-8 py-4 rounded-xl glass text-white font-semibold hover:bg-white/10 transition-all border border-white/20">
+                        了解正确方案
+                    </a>
+                </div>
+            </div>
+
+            <!-- Visual Disk Representation -->
+            <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto reveal">
+                <div class="glass-card rounded-2xl p-6 relative overflow-hidden group hover-lift">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-red-500/30 transition-all"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center mb-4 text-red-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1">C 盘 (系统盘)</h3>
+                        <p class="text-sm text-gray-400">Windows 系统核心区域</p>
+                        <div class="mt-4 h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-red-500 to-orange-500 w-[90%]"></div>
+                        </div>
+                        <p class="text-xs text-red-400 mt-2 font-mono">空间紧张 ⚠️</p>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 relative overflow-hidden group hover-lift">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-500/30 transition-all"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4 text-blue-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1">D 盘 (软件盘)</h3>
+                        <p class="text-sm text-gray-400">应用程序与安装包</p>
+                        <div class="mt-4 h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 w-[45%]"></div>
+                        </div>
+                        <p class="text-xs text-blue-400 mt-2 font-mono">空间充足 ✓</p>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 relative overflow-hidden group hover-lift">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-500/30 transition-all"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4 text-emerald-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1">E 盘 (资料盘)</h3>
+                        <p class="text-sm text-gray-400">文档、照片与视频</p>
+                        <div class="mt-4 h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 w-[30%]"></div>
+                        </div>
+                        <p class="text-xs text-emerald-400 mt-2 font-mono">空间充足 ✓</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concept -->
+    <section id="core" class="py-24 relative">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="reveal-left">
+                    <div class="inline-block px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-sm font-semibold mb-4 border border-indigo-500/20">
+                        核心概念
+                    </div>
+                    <h2 class="text-4xl font-bold text-white mb-6 leading-tight">
+                        C 盘是<span class="text-gradient">生命线</span><br>
+                        D/E 盘是<span class="text-gradient-blue">储物间</span>
+                    </h2>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6">
+                        Windows 操作系统本身就像人体的心脏，而 C 盘就是心脏所在的胸腔。当你把个人文件、软件缓存、游戏数据全部塞进 C 盘时，等于在心脏旁边堆满杂物，随时可能窒息。
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold">C 盘职责</h4>
+                                <p class="text-gray-500 text-sm">运行系统、虚拟内存、缓存交换、更新补丁</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold">D/E 盘职责</h4>
+                                <p class="text-gray-500 text-sm">存储个人资料、安装软件、备份重要文件</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl blur-2xl opacity-20"></div>
+                        <div class="relative glass-card rounded-3xl p-8">
+                            <div class="flex items-center justify-between mb-6 pb-6 border-b border-white/5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 font-mono">SYSTEM STATUS</span>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-gray-400">C 盘空间占用</span>
+                                        <span class="text-red-400 font-mono">92%</span>
+                                    </div>
+                                    <div class="h-3 bg-gray-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-red-600 to-orange-500 w-[92%] relative">
+                                            <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-red-400/80 mt-2">⚠️ 系统运行缓慢，随时可能崩溃</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-gray-400">虚拟内存</span>
+                                        <span class="text-orange-400 font-mono">受限</span>
+                                    </div>
+                                    <div class="h-3 bg-gray-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-orange-600 to-yellow-500 w-[78%]"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-gray-400">磁盘碎片</span>
+                                        <span class="text-yellow-400 font-mono">严重</span>
+                                    </div>
+                                    <div class="h-3 bg-gray-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-yellow-600 to-yellow-400 w-[65%]"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span class="text-sm text-red-300">检测到系统性能严重下降，建议立即清理 C 盘</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5 Risks Section -->
+    <section id="risks" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-block px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-sm font-semibold mb-4 border border-red-500/20">
+                    风险警示
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">C 盘乱存的 <span class="text-gradient">5 个大坑</span></h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">每一条都足以让你的电脑体验从流畅变为噩梦，切勿掉以轻心。</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Risk 1 -->
+                <div class="glass-card rounded-2xl p-8 hover-lift reveal group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-red-600/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-red-600/20 transition-all duration-500"></div>
+                    <div class="number-badge w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-6 relative z-10">1</div>
+                    <h3 class="text-xl font-bold text-white mb-3 relative z-10">C 盘爆满，电脑直接变卡、死机</h3>
+                    <p class="text-gray-400 leading-relaxed relative z-10 text-sm">
+                        Windows 运行需要 C 盘空间做虚拟内存和缓存。空间不足会导致开机慢、软件转圈、浏览器卡顿、游戏掉帧，甚至直接蓝屏死机。
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 text-red-400 text-sm font-medium relative z-10">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span>性能杀手</span>
+                    </div>
+                </div>
+
+                <!-- Risk 2 -->
+                <div class="glass-card rounded-2xl p-8 hover-lift reveal group relative overflow-hidden" style="transition-delay: 100ms;">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-orange-600/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-orange-600/20 transition-all duration-500"></div>
+                    <div class="number-badge w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-6 relative z-10" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">2</div>
+                    <h3 class="text-xl font-bold text-white mb-3 relative z-10">重装系统会清空 C 盘所有东西</h3>
+                    <p class="text-gray-400 leading-relaxed relative z-10 text-sm">
+                        电脑中毒或系统崩溃需要重装时，默认只格式化 C 盘。桌面、文档、C 盘文件夹里的照片和资料全删光，且无法找回。
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 text-orange-400 text-sm font-medium relative z-10">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <span>数据高危</span>
+                    </div>
+                </div>
+
+                <!-- Risk 3 -->
+                <div class="glass-card rounded-2xl p-8 hover-lift reveal group relative overflow-hidden" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-yellow-600/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-yellow-600/20 transition-all duration-500"></div>
+                    <div class="number-badge w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-6 relative z-10" style="background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);">3</div>
+                    <h3 class="text-xl font-bold text-white mb-3 relative z-10">软件默认装 C 盘，越装越臃肿</h3>
+                    <p class="text-gray-400 leading-relaxed relative z-10 text-sm">
+                        微信、QQ、浏览器、游戏默认都往 C 盘装。聊天记录、图片、视频、更新包全堆 C 盘，几天就红盘，越用越卡。
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 text-yellow-400 text-sm font-medium relative z-10">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                        <span>存储黑洞</span>
+                    </div>
+                </div>
+
+                <!-- Risk 4 -->
+                <div class="glass-card rounded-2xl p-8 hover-lift reveal group relative overflow-hidden" style="transition-delay: 300ms;">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-purple-600/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-purple-600/20 transition-all duration-500"></div>
+                    <div class="number-badge w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-6 relative z-10" style="background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);">4</div>
+                    <h3 class="text-xl font-bold text-white mb-3 relative z-10">容易产生系统垃圾、碎片文件</h3>
+                    <p class="text-gray-400 leading-relaxed relative z-10 text-sm">
+                        日常上网、更新、软件运行产生大量临时垃圾。C 盘文件太杂导致磁盘碎片多，硬盘读写速度直接变慢，机械硬盘尤其明显。
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 text-purple-400 text-sm font-medium relative z-10">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <span>碎片化危机</span>
+                    </div>
+                </div>
+
+                <!-- Risk 5 -->
+                <div class="glass-card rounded-2xl p-8 hover-lift reveal group relative overflow-hidden md:col-span-2 lg:col-span-2" style="transition-delay: 400ms;">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-pink-600/10 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-pink-600/20 transition-all duration-500"></div>
+                    <div class="flex flex-col md:flex-row md:items-center gap-6">
+                        <div class="flex-shrink-0">
+                            <div class="number-badge w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl relative z-10" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">5</div>
+                        </div>
+                        <div class="flex-1 relative z-10">
+                            <h3 class="text-xl font-bold text-white mb-3">后期不好清理，容易误删系统文件</h3>
+                            <p class="text-gray-400 leading-relaxed text-sm">
+                                C 盘里全是 Windows 核心文件，你乱建文件夹、乱放东西后，想清理垃圾时极易误删系统文件，导致直接开不了机。你也分不清哪些是系统文件、哪些是自己的资料。
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="mt-4 md:mt-0 flex items-center gap-2 text-pink-400 text-sm font-medium px-4 py-2 rounded-lg bg-pink-500/10 border border-pink-500/20">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <span>高危操作区</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why D/E Section -->
+    <section id="solution" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-900/10 to-transparent"></div>
+        <div class="max-w-6xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-semibold mb-4 border border-emerald-500/20">
+                    解决方案
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">为什么要分 <span class="text-gradient-blue">D 盘、E 盘？</span></h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-card rounded-2xl p-8 text-center hover-lift reveal group">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-6 shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">隔离系统和资料</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        系统在 C 盘，文件/照片/视频/软件安装全放 D/E。系统坏了随便重装，资料安然无恙，互不干扰。
+                    </p>
+                </div>
+
+                <div class="glass-card rounded-2xl p-8 text-center hover-lift reveal group" style="transition-delay: 150ms;">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">方便分类管理</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        D 盘放软件、安装包；E 盘放工作文档、照片、视频、游戏。找东西一目了然，逻辑清晰，效率倍增。
+                    </p>
+                </div>
+
+                <div class="glass-card rounded-2xl p-8 text-center hover-lift reveal group" style="transition-delay: 300ms;">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">电脑一直流畅</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        把个人数据、软件缓存迁移到 D/E，C 盘只留系统，永远不会轻易爆满，保持长久流畅如新。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Good Habits -->
+    <section id="habits" class="py-24 relative">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-block px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-sm font-semibold mb-4 border border-cyan-500/20">
+                    行动指南
+                </div>
+                <h2 class="text-4xl font-bold text-white mb-4">正确使用习惯 <span class="text-gradient-blue">记住这 3 条</span></h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="glass-card rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 reveal hover-lift group">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-indigo-500/20">1</div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">修改默认路径到 D 盘</h3>
+                        <p class="text-gray-400">桌面、下载、文档的默认路径全部改到 D 盘，别放 C 盘。这是防止 C 盘爆满的第一道防线。</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="px-4 py-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium">
+                            系统设置 → 存储 → 更改位置
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 reveal hover-lift group" style="transition-delay: 100ms;">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-blue-500/20">2</div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">安装软件选 D/E 盘</h3>
+                        <p class="text-gray-400">安装软件、游戏时一律手动选择 D/E 盘路径，不要无脑点「下一步」默认装到 C 盘。</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
+                            自定义安装 → D:\Program Files
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 reveal hover-lift group" style="transition-delay: 200ms;">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-emerald-500/20">3</div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">资料全部归类存 D/E</h3>
+                        <p class="text-gray-400">照片、视频、工作文件、聊天记录，全部归类存放到 D/E 盘指定文件夹，定期备份。</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
+                            E:\资料备份\2026
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SSD Note -->
+    <section class="py-24 relative">
+        <div class="max-w-4xl mx-auto px-6 reveal">
+            <div class="glass-card rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row items-start gap-6">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-4">补充：固态硬盘只有一个 C 盘怎么办？</h3>
+                        <p class="text-gray-400 text-lg leading-relaxed mb-6">
+                            无需重新分区重装系统。Windows 自带的磁盘管理工具可以<span class="text-white font-semibold">无损压缩 C 盘空间</span>，从剩余空间中新建一个 D 盘出来，专门用于存储个人资料。
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 text-sm">此电脑 → 管理 → 磁盘管理</span>
+                            <span class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 text-sm">压缩卷 → 新建简单卷</span>
+                            <span class="px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium">数据无损 ✓</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-gray-600 text-sm">
+                合理分配磁盘空间，让电脑保持最佳状态 · 系统优化指南
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all reveal elements
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach((el) => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Parallax effect for background orbs
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.bg-orb');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            orbs.forEach((orb, index) => {
+                const speed = (index + 1) * 20;
+                const xOffset = (0.5 - x) * speed;
+                const yOffset = (0.5 - y) * speed;
+                orb.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
