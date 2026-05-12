@@ -1,0 +1,1158 @@
+
+html_content = '''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>为什么 YouTube 几乎从不卡顿？</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-card: #16161f;
+            --bg-code: #1a1a24;
+            --text-primary: #e8e8ec;
+            --text-secondary: #8a8a96;
+            --text-muted: #5a5a68;
+            --accent: #ff3e3e;
+            --accent-soft: rgba(255, 62, 62, 0.08);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --gradient-start: #ff3e3e;
+            --gradient-end: #ff6b35;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.75;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(255, 62, 62, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(255, 107, 53, 0.04) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+            padding: 8px 16px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(255, 62, 62, 0.15);
+            border-radius: 100px;
+        }
+
+        .hero-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 48px;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-8px); }
+        }
+
+        .scroll-hint svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-muted);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        /* ========== NAV ========== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: 0.05em;
+        }
+
+        .nav-logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 0 auto;
+            max-width: 200px;
+        }
+
+        /* ========== SECTION HEADER ========== */
+        .section-header {
+            margin-bottom: 48px;
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-number::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+            max-width: 80px;
+        }
+
+        .section-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            max-width: 600px;
+        }
+
+        /* ========== CARDS ========== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-soft);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--accent);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ========== KEY INSIGHT ========== */
+        .insight {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            margin: 32px 0;
+            position: relative;
+        }
+
+        .insight::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 3px 0 0 3px;
+        }
+
+        .insight-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .insight-text {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        /* ========== COMPARISON TABLE ========== */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 0.95rem;
+        }
+
+        .compare-table th {
+            text-align: left;
+            padding: 14px 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .compare-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .compare-table .platform {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .compare-table .youtube {
+            color: var(--accent);
+        }
+
+        /* ========== CODE BLOCK ========== */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-lang {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .code-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .code-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-dots span:nth-child(1) { background: #ff5f56; }
+        .code-dots span:nth-child(2) { background: #ffbd2e; }
+        .code-dots span:nth-child(3) { background: #27c93f; }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            overflow-x: auto;
+        }
+
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .number { color: #f78c6c; }
+        .code-block .function { color: #82aaff; }
+
+        /* ========== TIMELINE ========== */
+        .timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 32px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -32px;
+            top: 4px;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent);
+            z-index: 2;
+        }
+
+        .timeline-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .timeline-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .timeline-content strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ========== DATA VISUALIZATION ========== */
+        .data-viz {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 32px 0;
+        }
+
+        .viz-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .bar-label {
+            width: 120px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 32px;
+            background: var(--bg-code);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: width 1.5s ease-out;
+        }
+
+        .bar-fill.youtube {
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        .bar-fill.domestic {
+            background: linear-gradient(90deg, #4a4a5a, #6a6a7a);
+        }
+
+        .bar-value {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ========== QUOTE ========== */
+        .quote-block {
+            margin: 48px 0;
+            padding: 32px 40px;
+            position: relative;
+            text-align: center;
+        }
+
+        .quote-block::before {
+            content: '"';
+            font-family: 'Noto Serif SC', serif;
+            font-size: 80px;
+            color: var(--accent);
+            opacity: 0.15;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 1;
+        }
+
+        .quote-text {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            line-height: 1.6;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote-author {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 48px 24px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 13px;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 640px) {
+            .nav {
+                padding: 16px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 100px 20px 60px;
+            }
+            
+            .hero-stats {
+                gap: 24px;
+            }
+            
+            .section {
+                padding: 48px 0;
+            }
+            
+            .card {
+                padding: 24px;
+            }
+            
+            .bar-label {
+                width: 80px;
+                font-size: 12px;
+            }
+            
+            .timeline {
+                padding-left: 24px;
+            }
+            
+            .timeline-dot {
+                left: -24px;
+                width: 11px;
+                height: 11px;
+            }
+        }
+
+        /* ========== SMOOTH SCROLL ========== */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* ========== SELECTION ========== */
+        ::selection {
+            background: rgba(255, 62, 62, 0.2);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="nav">
+        <div class="nav-logo">TECH<span>DEEP</span>DIVE</div>
+        <ul class="nav-links">
+            <li><a href="#tech">核心技术</a></li>
+            <li><a href="#protocol">传输协议</a></li>
+            <li><a href="#comparison">对比分析</a></li>
+            <li><a href="#conclusion">结论</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-tag">Streaming Technology</div>
+            <h1>
+                为什么 <span class="highlight">YouTube</span><br>
+                几乎从不卡顿？
+            </h1>
+            <p class="hero-subtitle">
+                这不是你的错觉。背后是一场持续十年的传输协议革命——从 TCP 到 QUIC，从被动缓冲到主动降级，YouTube 用一套"聪明"的技术组合拳，让卡顿成为了历史。
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">25×</span>
+                    <div class="stat-label">BBR 吞吐量提升</div>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">53%</span>
+                    <div class="stat-label">全球延迟降低</div>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">0-RTT</span>
+                    <div class="stat-label">QUIC 连接建立</div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-hint">
+            <span>向下探索</span>
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+
+        <!-- SECTION 1: ABR -->
+        <section class="section" id="tech">
+            <div class="section-header">
+                <div class="section-number">01 / 核心技术</div>
+                <h2 class="section-title">自适应码率：卡顿的"预防针"</h2>
+                <p class="section-desc">YouTube 会把同一段视频预先切成多个版本。播放器像一位精明的采购员，每 4 秒就评估一次你的网络状况。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+                    </div>
+                    主动降级 vs 被动卡顿
+                </div>
+                <p>YouTube 的 ABR（Adaptive Bitrate）算法会在检测到带宽下降时，<strong>在你还没感觉到卡之前</strong>，就悄悄切换到更低码率。而很多国内平台的播放器反应迟钝，非要等到缓冲空了才降级——这时用户已经看到转圈了。</p>
+                <p>这种"主动妥协"的策略，反而让整体体验更流畅。技术的智慧，有时候在于知道什么时候该让步。</p>
+            </div>
+
+            <div class="insight">
+                <div class="insight-label">核心洞察</div>
+                <div class="insight-text">
+                    YouTube 的流畅不是因为它更慷慨，而是因为它更"聪明"——它知道什么时候该妥协，什么时候该坚持。
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 2: QUIC -->
+        <section class="section" id="protocol">
+            <div class="section-header">
+                <div class="section-number">02 / 传输协议</div>
+                <h2 class="section-title">QUIC + BBR：传输层的换心手术</h2>
+                <p class="section-desc">这是 Google 最狠的一招。YouTube 已经大规模从 TCP 切换到了基于 UDP 的 QUIC 协议。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    TCP 的致命缺陷
+                </div>
+                <p>传统 TCP 有个致命缺陷：<strong>它把"丢包"等同于"网络拥堵"</strong>，一旦丢包就疯狂降速。但现代网络丢包的原因很多——WiFi 干扰、信号切换、路由器缓冲膨胀——并不一定是带宽不够。</p>
+                <p>TCP 的误判会导致视频流断崖式下跌。就像一位司机，一看到前车刹车灯亮，就不管原因直接踩死刹车。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                    BBR：用测量代替猜测
+                </div>
+                <p>BBR（Bottleneck Bandwidth and RTT）拥塞控制算法的聪明之处在于：<strong>它不猜，它测量</strong>。BBR 持续探测真实的带宽上限和最低延迟，计算出"刚好填满管道"的数据量。</p>
+                <p>既不打满缓存造成延迟，也不因丢包而过度恐慌。实测显示，YouTube 切换到 BBR 后，某些线路吞吐量提升了 <strong>25 倍</strong>，全球延迟降低 <strong>53%</strong>。</p>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Conceptual</span>
+                    <div class="code-dots"><span></span><span></span><span></span></div>
+                </div>
+                <pre><span class="comment">// TCP Reno: 丢包 = 拥堵，立即降速</span>
+<span class="keyword">if</span> (packet_loss_detected) {
+    cwnd = cwnd / <span class="number">2</span>;  <span class="comment">// 断崖式下跌</span>
+}
+
+<span class="comment">// BBR: 测量真实带宽，理性决策</span>
+<span class="keyword">while</span> (streaming) {
+    BtlBw = <span class="function">measure_bandwidth</span>();  <span class="comment">// 瓶颈带宽</span>
+    RTprop = <span class="function">measure_latency</span>();   <span class="comment">// 传播延迟</span>
+    
+    <span class="comment">// 计算最优 inflight 数据量</span>
+    inflight = BtlBw × RTprop;
+    <span class="function">send_at_rate</span>(BtlBw);  <span class="comment">// 刚好填满管道</span>
+}</pre>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    QUIC 的连接迁移
+                </div>
+                <p>更关键的是，QUIC 把连接建立从 3 次握手压缩到 <strong>0-RTT</strong>，且<strong>连接迁移不需要重连</strong>——你 WiFi 切 4G 时，视频流几乎无感知。</p>
+                <p>传统 TCP 的连接是绑定到 IP+端口的，网络切换意味着连接中断、重新建立。QUIC 用 Connection ID 解耦了连接与网络路径，实现了真正的"无缝漫游"。</p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 3: COMPARISON -->
+        <section class="section" id="comparison">
+            <div class="section-header">
+                <div class="section-number">03 / 对比分析</div>
+                <h2 class="section-title">国内平台为什么也用了 ABR 还卡？</h2>
+                <p class="section-desc">不是技术落后，而是场景和取舍不同。商业逻辑、编码策略、CDN 调度，都在影响着最终体验。</p>
+            </div>
+
+            <div class="data-viz">
+                <div class="viz-title">1080p 视频平均码率对比（Mbps）</div>
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <div class="bar-label">YouTube</div>
+                        <div class="bar-track">
+                            <div class="bar-fill youtube" style="width: 100%">5.7</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">Netflix</div>
+                        <div class="bar-track">
+                            <div class="bar-fill youtube" style="width: 100%">5.7</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">国内平台 A</div>
+                        <div class="bar-track">
+                            <div class="bar-fill domestic" style="width: 49%">2.8</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">国内平台 B</div>
+                        <div class="bar-track">
+                            <div class="bar-fill domestic" style="width: 46%">2.6</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>维度</th>
+                        <th>YouTube</th>
+                        <th>国内平台</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="platform">传输协议</td>
+                        <td class="youtube">QUIC + BBR（基于 UDP）</td>
+                        <td>TCP + CUBIC / Reno 为主</td>
+                    </tr>
+                    <tr>
+                        <td class="platform">1080p 码率</td>
+                        <td class="youtube">~5.7 Mbps（高码率）</td>
+                        <td>~2.8 Mbps（低码率压缩）</td>
+                    </tr>
+                    <tr>
+                        <td class="platform">降级空间</td>
+                        <td class="youtube">1080p→720p 依然清晰</td>
+                        <td>1080p→480p 已出现马赛克</td>
+                    </tr>
+                    <tr>
+                        <td class="platform">广告衔接</td>
+                        <td class="youtube">同一套流媒体管道，无缝</td>
+                        <td>广告与正片两套架构，切换易卡</td>
+                    </tr>
+                    <tr>
+                        <td class="platform">CDN 调度</td>
+                        <td class="youtube">全球节点 + 智能算法</td>
+                        <td>区域集中 + 跨网调度瓶颈</td>
+                    </tr>
+                    <tr>
+                        <td class="platform">预加载策略</td>
+                        <td class="youtube">"刚好够用"的克制策略</td>
+                        <td>尽量多缓存，切换时浪费</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </div>
+                    编码策略的深层差异
+                </div>
+                <p>华为白皮书做过对比测试：<strong>海外平台 1080p 视频平均码率是 5.7 Mbps，而国内平台平均只有 2.8 Mbps</strong>——几乎是两倍差距。</p>
+                <p>这意味着国内平台用更低的码率压缩视频，虽然省带宽，但画面复杂度一高（比如快速运动的场景），低码率就会暴露马赛克和色块。而 YouTube 的高码率给了 ABR 更大的"降级空间"。</p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 4: TIMELINE -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">04 / 技术演进</div>
+                <h2 class="section-title">从 TCP 到 QUIC 的十年长征</h2>
+                <p class="section-desc">这不是一蹴而就的胜利，而是 Google 持续投入、逐步验证、最终大规模部署的结果。</p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2013</div>
+                    <div class="timeline-content">
+                        <strong>QUIC 协议诞生</strong> — Google 内部启动实验性项目，基于 UDP 重新设计传输层，解决 TCP 的队头阻塞和连接迁移问题。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2016</div>
+                    <div class="timeline-content">
+                        <strong>BBR 算法发布</strong> — Google 提出 Bottleneck Bandwidth and RTT 拥塞控制算法，彻底颠覆 TCP 的"丢包=拥堵"假设。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2018</div>
+                    <div class="timeline-content">
+                        <strong>大规模部署</strong> — YouTube 全面切换至 QUIC，全球 30% 的流量开始通过 UDP 传输。延迟显著降低，重缓冲率下降。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2021</div>
+                    <div class="timeline-content">
+                        <strong>HTTP/3 标准化</strong> — QUIC 被 IETF 正式标准化为 HTTP/3，成为下一代 Web 协议基石。Chrome、Firefox、Safari 全面支持。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2025</div>
+                    <div class="timeline-content">
+                        <strong>生态成熟</strong> — QUIC 占 Google 流量超过 75%，成为事实上的默认传输协议。国内厂商开始逐步跟进，但生态差距仍在。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 5: CONCLUSION -->
+        <section class="section" id="conclusion">
+            <div class="section-header">
+                <div class="section-number">05 / 结论</div>
+                <h2 class="section-title">技术的本质，是取舍的艺术</h2>
+            </div>
+
+            <div class="quote-block">
+                <p class="quote-text">
+                    YouTube 的流畅不是因为它更慷慨，<br>
+                    而是因为它更"聪明"——<br>
+                    它知道什么时候该妥协，什么时候该坚持。
+                </p>
+                <p class="quote-author">— 本文核心观点</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m0 16v1m-7-8H3m18 0h-1M5.636 6.364l-.707-.707m13.072 13.072l-.707-.707M5.636 17.636l-.707.707m13.072-13.072l-.707.707"/></svg>
+                    </div>
+                    总结：三保险架构
+                </div>
+                <p><strong>① ABR 自适应码率</strong> — 主动、提前降级，在用户感知之前完成切换。</p>
+                <p><strong>② QUIC + BBR</strong> — 用测量代替猜测，用 UDP 绕过 TCP 的设计缺陷。</p>
+                <p><strong>③ 克制预加载 + 全球 CDN</strong> — 刚好够用的缓冲策略，配合最优节点调度。</p>
+                <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">这三者不是孤立的技术，而是一个<strong>协同系统</strong>。ABR 决定"传什么"，QUIC 决定"怎么传"，CDN 决定"从哪传"。任何一个环节的短板，都会让整体体验崩塌。</p>
+            </div>
+
+            <div class="insight">
+                <div class="insight-label">延伸阅读</div>
+                <div class="insight-text">
+                    如果你想继续探索这个话题，可以关注：Netflix 的 per-title 编码优化、Twitch 的低延迟直播技术、以及国内 B 站采用的 DASH 与 HLS 混合方案。
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p class="footer-text">TECHDEEPDIVE — 用技术的视角，理解日常中的不寻常</p>
+        <ul class="footer-links">
+            <li><a href="#">GitHub</a></li>
+            <li><a href="#">YouTube</a></li>
+            <li><a href="#">RSS</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Animate bars on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bars = entry.target.querySelectorAll('.bar-fill');
+                    bars.forEach(bar => {
+                        const targetWidth = bar.style.width;
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = targetWidth;
+                        }, 100);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const chart = document.querySelector('.bar-chart');
+        if (chart) observer.observe(chart.closest('.data-viz'));
+
+        // Nav background on scroll
+        const nav = document.querySelector('.nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(10, 10, 15, 0.95)';
+            } else {
+                nav.style.background = 'rgba(10, 10, 15, 0.8)';
+            }
+        });
+    </script>
+
+</body>
+</html>'''
+
+# Save to output
+output_path = '/mnt/agents/output/youtube-streaming-tech.html'
+with open(output_path, 'w', encoding='utf-8') as f:
+    f.write(html_content)
